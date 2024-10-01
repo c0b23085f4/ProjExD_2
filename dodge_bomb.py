@@ -28,7 +28,10 @@ def check_bound(obj_rct: pg.Rect):
 
     return yoko, tate
 
-def game_over(screen):
+def game_over(screen: pg.Rect):
+    """
+    ゲームオーバーになった時に画面にこうかとんとゲームオーバーの文字列を表示する関数
+    """
     img = pg.image.load("fig/8.png")
     font = pg.font.Font(None, 55)
     # 描画する文字列の設定（白色）
@@ -41,7 +44,21 @@ def game_over(screen):
     screen.blit(img, [WIDTH*3/4, HEIGHT/2])
     pg.display.update()
     time.sleep(3)
-    
+
+def bomb_list():
+    """
+    爆弾の加速度と大きさを10段階で表すリストの作成
+    """
+    accs = [a for a in range(1, 11)]
+    bb_imgs = []
+    for r in range(1, 11):
+        bb_img = pg.Surface((20*r, 20*r))
+        bb_imgs.append(bb_img)
+
+        return accs, bb_imgs
+
+
+
 
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
@@ -50,15 +67,23 @@ def main():
     kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9)
     kk_rct = kk_img.get_rect()
     kk_rct.center = 300, 200
-    bb_img = pg.Surface((20, 20))  # 空のSurface
-    bb_img.set_colorkey((0, 0, 0))  # 爆弾の四隅を透過させる
+    # bb_img = pg.Surface((20, 20))  # 空のSurface
+    # bb_img.set_colorkey((0, 0, 0))  # 爆弾の四隅を透過させる
+    # pg.draw.circle(bb_img, (255, 0, 0), (10, 10), 10)
+    # bb_rct = bb_img.get_rect()  # 爆弾Rectの抽出
+    # bb_rct.centerx = random.randint(0, WIDTH)
+    # bb_rct.centery = random.randint(0, HEIGHT)
+    vx, vy = +5, +5  # 爆弾の速度
+    clock = pg.time.Clock()
+    tmr = 0
+    bb_accs, bb_imgs = bomb_list()
+    avx = vx*bb_accs[min(tmr//500, 9)]
+    bb_img = bb_imgs[min(tmr//500, 9)]
+    bb_img.set_colorkey((0, 0, 0)) 
     pg.draw.circle(bb_img, (255, 0, 0), (10, 10), 10)
     bb_rct = bb_img.get_rect()  # 爆弾Rectの抽出
     bb_rct.centerx = random.randint(0, WIDTH)
     bb_rct.centery = random.randint(0, HEIGHT)
-    vx, vy = +5, +5  # 爆弾の速度
-    clock = pg.time.Clock()
-    tmr = 0
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT: 
@@ -79,18 +104,18 @@ def main():
             kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
             screen.blit(kk_img, kk_rct)
         screen.blit(kk_img, kk_rct)
-        bb_rct.move_ip(vx, vy)
+        bb_rct.move_ip(avx, vy)
         screen.blit(bb_img, bb_rct)
-        bb_rct.move_ip(vx, vy)
+        bb_rct.move_ip(avx, vy)
         yoko, tate = check_bound(bb_rct)
         if not yoko:
-            vx *= -1
+            avx *= -1
         if not tate:
             vy *= -1
         screen.blit(bb_img, bb_rct)
         pg.display.update()
         tmr += 1
-        clock.tick(5000)
+        clock.tick(50)
 
 
 if __name__ == "__main__":
