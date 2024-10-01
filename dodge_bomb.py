@@ -30,6 +30,8 @@ def check_bound(obj_rct: pg.Rect):
 
 def game_over(screen: pg.Rect):
     """
+    引数：描画する画面のRect
+    戻り値：なし
     ゲームオーバーになった時に画面にこうかとんとゲームオーバーの文字列を表示する関数
     """
     img = pg.image.load("fig/8.png")
