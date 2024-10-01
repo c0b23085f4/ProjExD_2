@@ -39,9 +39,9 @@ def game_over(screen):
     screen.blit(text, [WIDTH/2, HEIGHT/2])
     screen.blit(img, [WIDTH/4, HEIGHT/2])
     screen.blit(img, [WIDTH*3/4, HEIGHT/2])
-    pg.display.update()
+
     time.sleep(3)
-    
+    return
 
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
@@ -98,5 +98,3 @@ if __name__ == "__main__":
     main()
     pg.quit()
     sys.exit()
-
-
