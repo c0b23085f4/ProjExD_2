@@ -45,8 +45,9 @@ def game_over(screen: pg.Rect):
     pg.display.update()
     time.sleep(3)
 
-def bomb_list():
+def bomb_list() -> tuple:
     """
+    戻り値:10段階の加速度と10段階の爆弾のサイズをリストとする2つの要素のタプル
     爆弾の加速度と大きさを10段階で表すリストの作成
     """
     accs = [a for a in range(1, 11)]
@@ -56,6 +57,29 @@ def bomb_list():
         bb_imgs.append(bb_img)
 
         return accs, bb_imgs
+
+
+def roto_zoom(kk_img: pg.Surface, tpl: tuple) -> pg.Surface:
+    """
+    引数:kk_img -> こうかとんの画像のSurface
+    引数:tpl -> 移動するx, y座標のtupple
+    戻り値:roto_dic[tpl] -> 回転したこうかとんの画像のSurface
+    """
+    fp_kk_img = pg.transform.flip(kk_img, True, False)
+    roto_dic = {
+        (+0, -5): pg.transform.rotozoom(fp_kk_img, 90, 1),
+        (+5, -5): pg.transform.rotozoom(fp_kk_img, 45, 1),
+        (+5, +0): pg.transform.rotozoom(fp_kk_img, 0, 1),
+        (+0, +0): pg.transform.rotozoom(fp_kk_img, 0, 1),
+        (+5, +5): pg.transform.rotozoom(fp_kk_img, -45, 1),
+        (+0, +5): pg.transform.rotozoom(fp_kk_img, -90, 1),
+        (-5, +5): pg.transform.rotozoom(kk_img, 45, 1),
+        (-5, +0): pg.transform.rotozoom(kk_img, 0, 1),
+        (-5, -5): pg.transform.rotozoom(kk_img, -45, 1),
+    }
+
+    return roto_dic[tpl]
+
 
 
 
@@ -103,7 +127,8 @@ def main():
         if check_bound(kk_rct) != (True, True):
             kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
             screen.blit(kk_img, kk_rct)
-        screen.blit(kk_img, kk_rct)
+        # 回転したこうかとんを表示
+        screen.blit(roto_zoom(kk_img, tuple(sum_mv)), kk_rct)
         bb_rct.move_ip(avx, vy)
         screen.blit(bb_img, bb_rct)
         bb_rct.move_ip(avx, vy)
